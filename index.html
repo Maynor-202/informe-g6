@@ -3,74 +3,187 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Informe Grupo 6</title>
+  <title>Sistema Grupo 6</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#2563eb">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
-    body { font-family: 'Inter', sans-serif; background:#f3f4f6; margin:0; }
-    .tabla-wrap { overflow-x: auto; background: white; border: 1px solid #374151; display: inline-grid; }
-    .grid-pub { grid-template-columns: 40px 180px 80px 80px 200px; }
-    .tabla-header div { background: #1f2937; color: white; font-weight: bold; padding: 8px; text-align: center; border: 0.5px solid #374151; }
-    .celda { border: 0.5px solid #d1d5db; padding: 6px; display: flex; align-items: center; justify-content: center; background: white; }
-    .input-table { width: 100%; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px; }
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+    body { font-family: 'Poppins', sans-serif; background: #f8fafc; overflow: hidden; }
+    .sidebar { transition: 0.3s; transform: translateX(-100%); }
+    .sidebar.active { transform: translateX(0); }
+    .overlay { display: none; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
+    .overlay.active { display: block; }
+    .card { background: white; border-radius: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+    input[type="number"]::-webkit-inner-spin-button { display: none; }
   </style>
 </head>
-<body>
-  <div class="bg-white shadow-sm sticky top-0 z-30 flex items-center justify-between p-4">
-    <h1 class="font-bold text-gray-800">Informe Grupo 6</h1>
-    <div class="flex gap-3">
-      <button onclick="compartirWhatsApp()" class="text-green-600 text-xl"><i class="fa-brands fa-whatsapp"></i></button>
-      <button onclick="imprimirInforme()" class="text-red-600 text-xl"><i class="fa-solid fa-file-pdf"></i></button>
-    </div>
-  </div>
-  <main id="areaImprimir" class="p-4">
-    <div class="bg-white p-4 rounded-lg shadow-sm">
-      <h2 class="text-center font-bold text-blue-800 mb-4 uppercase text-lg">Informe de Predicación</h2>
-      <div class="tabla-wrap grid-pub" id="contenedor-tabla"></div>
-      <div class="mt-6 max-w-xs mx-auto border-2 border-blue-800 rounded-lg overflow-hidden text-sm">
-        <div class="bg-blue-800 text-white text-center p-2 font-bold uppercase">Resumen Total</div>
-        <div class="p-4 space-y-2 bg-blue-50">
-          <div class="flex justify-between"><span>Publicadores:</span> <span id="res-pub" class="font-bold">0</span></div>
-          <div class="flex justify-between border-t border-blue-200 pt-2 text-blue-900 font-bold"><span>TOTAL HORAS:</span> <span id="res-horas">0</span></div>
+<body class="flex flex-col h-screen">
+
+  <div id="overlay" class="overlay fixed inset-0 z-40" onclick="toggleMenu()"></div>
+  <nav id="sidebar" class="sidebar fixed left-0 top-0 h-full w-72 bg-slate-900 z-50 flex flex-col text-white shadow-2xl">
+    <div class="p-8 border-b border-slate-800">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+          <i class="fa-solid fa-chart-line text-xl"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold">Grupo 6</h2>
+          <p class="text-[10px] text-slate-400 uppercase tracking-widest">Panel de Control</p>
         </div>
       </div>
     </div>
+    
+    <div class="flex-1 p-4 space-y-2 mt-4">
+      <button class="w-full text-left p-4 rounded-xl bg-blue-600/10 text-blue-400 flex items-center gap-4 border border-blue-600/20">
+        <i class="fa-solid fa-house"></i> <span class="font-medium">Inicio</span>
+      </button>
+      <button class="w-full text-left p-4 rounded-xl hover:bg-slate-800 text-slate-400 flex items-center gap-4 transition-all">
+        <i class="fa-solid fa-users"></i> <span class="font-medium">Publicadores</span>
+      </button>
+      <button class="w-full text-left p-4 rounded-xl hover:bg-slate-800 text-slate-400 flex items-center gap-4 transition-all">
+        <i class="fa-solid fa-calendar-check"></i> <span class="font-medium">Historial</span>
+      </button>
+      <button class="w-full text-left p-4 rounded-xl hover:bg-slate-800 text-slate-400 flex items-center gap-4 transition-all">
+        <i class="fa-solid fa-gear"></i> <span class="font-medium">Ajustes</span>
+      </button>
+    </div>
+
+    <div class="p-6 border-t border-slate-800 mt-auto">
+      <div class="bg-slate-800/50 p-4 rounded-xl flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-xs font-bold">E</div>
+        <div>
+          <p class="text-xs font-semibold">Estere</p>
+          <p class="text-[10px] text-slate-500">Administrador</p>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <header class="bg-white border-b border-slate-200 p-4 sticky top-0 z-30 flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <button onclick="toggleMenu()" class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-slate-100 text-slate-600 transition-colors">
+        <i class="fa-solid fa-bars-staggered text-xl"></i>
+      </button>
+      <h1 class="font-bold text-slate-800">Reporte Mensual</h1>
+    </div>
+    <div class="flex gap-2">
+      <button onclick="compartirWhatsApp()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-green-50 text-green-600 hover:bg-green-100 transition-colors">
+        <i class="fa-brands fa-whatsapp text-xl"></i>
+      </button>
+      <button onclick="imprimirInforme()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors">
+        <i class="fa-solid fa-file-pdf text-xl"></i>
+      </button>
+    </div>
+  </header>
+
+  <main class="flex-1 p-4 overflow-y-auto space-y-6 pb-24" id="areaImprimir">
+    
+    <div class="grid grid-cols-2 gap-4">
+      <div class="card p-5 bg-blue-600 text-white relative overflow-hidden">
+        <i class="fa-solid fa-clock absolute -right-2 -bottom-2 text-6xl opacity-10"></i>
+        <p class="text-blue-100 text-xs font-medium uppercase">Horas Totales</p>
+        <h3 id="res-horas" class="text-3xl font-bold mt-1">0</h3>
+      </div>
+      <div class="card p-5 bg-emerald-500 text-white relative overflow-hidden">
+        <i class="fa-solid fa-user-check absolute -right-2 -bottom-2 text-6xl opacity-10"></i>
+        <p class="text-emerald-100 text-xs font-medium uppercase">Informes</p>
+        <h3 id="res-pub" class="text-3xl font-bold mt-1">0</h3>
+      </div>
+    </div>
+
+    <div class="card overflow-hidden border border-slate-100">
+      <div class="p-4 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Lista de Miembros</span>
+        <span class="text-[11px] font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase">Abril 2026</span>
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table class="w-full text-left">
+          <thead class="text-[10px] text-slate-400 uppercase font-bold bg-slate-50/30">
+            <tr>
+              <th class="p-4 text-center w-12">#</th>
+              <th class="p-4">Nombre</th>
+              <th class="p-4 text-center">Info</th>
+              <th class="p-4 text-center">Hrs</th>
+            </tr>
+          </thead>
+          <tbody id="contenedor-filas" class="divide-y divide-slate-50">
+            </tbody>
+        </table>
+      </div>
+    </div>
   </main>
+
+  <button onclick="agregarFila()" class="fixed bottom-8 right-6 bg-slate-900 text-white w-14 h-14 rounded-2xl shadow-xl flex items-center justify-center text-xl hover:bg-blue-600 hover:scale-110 active:scale-95 transition-all z-20">
+    <i class="fa-solid fa-plus"></i>
+  </button>
+
   <script>
-    let datos = JSON.parse(localStorage.getItem('informe_g6_db')) || [
-      { nombre: "Publicador 1", entrego: false, horas: 0, notas: "" },
-      { nombre: "Publicador 2", entrego: false, horas: 0, notas: "" }
+    let datos = JSON.parse(localStorage.getItem('informe_v2_db')) || [
+      { nombre: "Nombre del Publicador", entrego: false, horas: 0 }
     ];
+
+    function toggleMenu() {
+      document.getElementById('sidebar').classList.toggle('active');
+      document.getElementById('overlay').classList.toggle('active');
+    }
+
     function render() {
-      const container = document.getElementById('contenedor-tabla');
-      const headers = `<div class="tabla-header"><div>N°</div></div><div class="tabla-header"><div>Nombre</div></div><div class="tabla-header"><div>Entregó</div></div><div class="tabla-header"><div>Horas</div></div><div class="tabla-header"><div>Notas</div></div>`;
-      let html = headers;
-      let tHoras = 0; let tEntregados = 0;
+      const tbody = document.getElementById('contenedor-filas');
+      let html = "";
+      let tHoras = 0, tEntregados = 0;
+
       datos.forEach((p, i) => {
         tHoras += Number(p.horas);
         if(p.entrego) tEntregados++;
-        html += `<div class="celda">${i+1}</div>
-          <div class="celda"><input class="input-table" value="${p.nombre}" onchange="update(${i},'nombre',this.value)"></div>
-          <div class="celda"><input type="checkbox" ${p.entrego?'checked':''} onchange="update(${i},'entrego',this.checked)"></div>
-          <div class="celda"><input type="number" class="input-table text-center" value="${p.horas}" onchange="update(${i},'horas',this.value)"></div>
-          <div class="celda"><input class="input-table" value="${p.notas}" onchange="update(${i},'notas',this.value)"></div>`;
+        html += `
+          <tr class="group hover:bg-slate-50 transition-colors">
+            <td class="p-4 text-center font-mono text-xs text-slate-300">${i+1}</td>
+            <td class="p-4">
+              <input class="bg-transparent w-full focus:outline-none font-semibold text-slate-700 placeholder:text-slate-300" 
+                     placeholder="Escribir nombre..." value="${p.nombre}" onchange="update(${i},'nombre',this.value)">
+            </td>
+            <td class="p-4 text-center">
+              <input type="checkbox" class="w-5 h-5 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500" 
+                     ${p.entrego?'checked':''} onchange="update(${i},'entrego',this.checked)">
+            </td>
+            <td class="p-4 text-center">
+              <input type="number" class="w-14 h-10 bg-slate-100 rounded-xl text-center font-bold text-blue-700 focus:bg-blue-50 focus:ring-2 focus:ring-blue-200 outline-none transition-all" 
+                     value="${p.horas}" onchange="update(${i},'horas',this.value)">
+            </td>
+          </tr>`;
       });
-      container.innerHTML = html;
+
+      tbody.innerHTML = html;
       document.getElementById('res-pub').innerText = tEntregados;
       document.getElementById('res-horas').innerText = tHoras;
-      localStorage.setItem('informe_g6_db', JSON.stringify(datos));
+      localStorage.setItem('informe_v2_db', JSON.stringify(datos));
     }
-    function update(i, f, v) { datos[i][f] = v; render(); }
-    function imprimirInforme() { html2pdf().from(document.getElementById('areaImprimir')).save('Informe_G6.pdf'); }
+
+    function agregarFila() {
+      datos.push({ nombre: "", entrego: false, horas: 0 });
+      render();
+    }
+
+    function update(i, f, v) { 
+      datos[i][f] = v; 
+      render(); 
+    }
+
+    function imprimirInforme() {
+      const opt = { margin: 1, filename: 'Informe_Grupo6.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
+      html2pdf().set(opt).from(document.getElementById('areaImprimir')).save();
+    }
+
     function compartirWhatsApp() {
       const h = document.getElementById('res-horas').innerText;
       const p = document.getElementById('res-pub').innerText;
-      window.open(`https://wa.me/?text=*Informe Grupo 6*%0AEntregaron: ${p}%0ATotal Horas: ${h}`);
+      const msg = encodeURIComponent(`*📊 INFORME GRUPO 6*\n━━━━━━━━━━━━━━\n✅ Informes: ${p}\n⏰ Total Horas: ${h}\n━━━━━━━━━━━━━━`);
+      window.open(`https://wa.me/?text=${msg}`);
     }
-    if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('sw.js')); }
+
     render();
   </script>
 </body>
