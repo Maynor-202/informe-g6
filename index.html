@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Informe Grupo 6</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2563eb">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background:#f3f4f6; margin:0; }
+    .tabla-wrap { overflow-x: auto; background: white; border: 1px solid #374151; display: inline-grid; }
+    .grid-pub { grid-template-columns: 40px 180px 80px 80px 200px; }
+    .tabla-header div { background: #1f2937; color: white; font-weight: bold; padding: 8px; text-align: center; border: 0.5px solid #374151; }
+    .celda { border: 0.5px solid #d1d5db; padding: 6px; display: flex; align-items: center; justify-content: center; background: white; }
+    .input-table { width: 100%; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px; }
+  </style>
+</head>
+<body>
+  <div class="bg-white shadow-sm sticky top-0 z-30 flex items-center justify-between p-4">
+    <h1 class="font-bold text-gray-800">Informe Grupo 6</h1>
+    <div class="flex gap-3">
+      <button onclick="compartirWhatsApp()" class="text-green-600 text-xl"><i class="fa-brands fa-whatsapp"></i></button>
+      <button onclick="imprimirInforme()" class="text-red-600 text-xl"><i class="fa-solid fa-file-pdf"></i></button>
+    </div>
+  </div>
+  <main id="areaImprimir" class="p-4">
+    <div class="bg-white p-4 rounded-lg shadow-sm">
+      <h2 class="text-center font-bold text-blue-800 mb-4 uppercase text-lg">Informe de Predicación</h2>
+      <div class="tabla-wrap grid-pub" id="contenedor-tabla"></div>
+      <div class="mt-6 max-w-xs mx-auto border-2 border-blue-800 rounded-lg overflow-hidden text-sm">
+        <div class="bg-blue-800 text-white text-center p-2 font-bold uppercase">Resumen Total</div>
+        <div class="p-4 space-y-2 bg-blue-50">
+          <div class="flex justify-between"><span>Publicadores:</span> <span id="res-pub" class="font-bold">0</span></div>
+          <div class="flex justify-between border-t border-blue-200 pt-2 text-blue-900 font-bold"><span>TOTAL HORAS:</span> <span id="res-horas">0</span></div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script>
+    let datos = JSON.parse(localStorage.getItem('informe_g6_db')) || [
+      { nombre: "Publicador 1", entrego: false, horas: 0, notas: "" },
+      { nombre: "Publicador 2", entrego: false, horas: 0, notas: "" }
+    ];
+    function render() {
+      const container = document.getElementById('contenedor-tabla');
+      const headers = `<div class="tabla-header"><div>N°</div></div><div class="tabla-header"><div>Nombre</div></div><div class="tabla-header"><div>Entregó</div></div><div class="tabla-header"><div>Horas</div></div><div class="tabla-header"><div>Notas</div></div>`;
+      let html = headers;
+      let tHoras = 0; let tEntregados = 0;
+      datos.forEach((p, i) => {
+        tHoras += Number(p.horas);
+        if(p.entrego) tEntregados++;
+        html += `<div class="celda">${i+1}</div>
+          <div class="celda"><input class="input-table" value="${p.nombre}" onchange="update(${i},'nombre',this.value)"></div>
+          <div class="celda"><input type="checkbox" ${p.entrego?'checked':''} onchange="update(${i},'entrego',this.checked)"></div>
+          <div class="celda"><input type="number" class="input-table text-center" value="${p.horas}" onchange="update(${i},'horas',this.value)"></div>
+          <div class="celda"><input class="input-table" value="${p.notas}" onchange="update(${i},'notas',this.value)"></div>`;
+      });
+      container.innerHTML = html;
+      document.getElementById('res-pub').innerText = tEntregados;
+      document.getElementById('res-horas').innerText = tHoras;
+      localStorage.setItem('informe_g6_db', JSON.stringify(datos));
+    }
+    function update(i, f, v) { datos[i][f] = v; render(); }
+    function imprimirInforme() { html2pdf().from(document.getElementById('areaImprimir')).save('Informe_G6.pdf'); }
+    function compartirWhatsApp() {
+      const h = document.getElementById('res-horas').innerText;
+      const p = document.getElementById('res-pub').innerText;
+      window.open(`https://wa.me/?text=*Informe Grupo 6*%0AEntregaron: ${p}%0ATotal Horas: ${h}`);
+    }
+    if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('sw.js')); }
+    render();
+  </script>
+</body>
+</html>
