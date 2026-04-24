@@ -1,405 +1,103 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Informe de Predicación - Grupo 6</title>
-  <meta name="theme-color" content="#1e40af"/>
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3233/3233474.png">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    :root { --scale-texto: 1; --scale-titulo: 1; --scale-encabezado: 1; }
-    body { font-family: 'Inter', sans-serif; font-size: calc(16px * var(--scale-texto)); margin:0; background:#f3f4f6; }
-    input[type="number"]::-webkit-outer-spin-button,
-    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-    input[type="number"] { -moz-appearance: textfield; }
-  .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
-  .sidebar-open { transform: translateX(0); }
-  .overlay { display: none; }
-  .overlay-active { display: block; }
-  .pantalla { display: none; }
-  .pantalla-activa { display: block; }
-  .font-panel { display: none; }
-  .font-panel-open { display: block; }
-  .font-titulo { font-size: calc(0.875rem * var(--scale-titulo))!important; }
-  .font-encabezado { font-size: calc(0.75rem * var(--scale-encabezado))!important; }
-  .tabla-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .tabla-excel { display: inline-grid; font-size: calc(11px * var(--scale-texto)); border: 1px solid #374151; }
-  .tabla-excel > div { border-bottom: 1px solid #d1d5db; border-right: 1px solid #d1d5db; padding: 5px 3px; display: flex; align-items: center; min-height: 36px; background: white; justify-content: center; text-align: center; }
-  .tabla-excel > div:last-child { border-right: 0; }
-  .tabla-header > div { background: #1f2937!important; color: white; font-weight: 700; padding: 8px 3px; line-height: 1.2; white-space: normal; font-size: calc(11px * var(--scale-encabezado)); }
-  .tabla-totales > div { background: #dbeafe!important; font-weight: 700; color: #1e40af; }
-  .celda-num { width: 32px; flex-shrink: 0; }
-  .celda-nombre { min-width: 130px; justify-content: flex-start!important; padding-left: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left!important; }
-  .celda-check { width: 85px; flex-shrink: 0; }
-  .celda-input { width: 75px; padding: 2px; flex-shrink: 0; }
-  .celda-horas { width: 60px; padding: 2px; flex-shrink: 0; }
-  .celda-notas { min-width: 150px; padding: 2px 4px; }
-  .input-num { width: 100%; border: 1px solid #9ca3af; border-radius: 3px; text-align: center; padding: 3px; font-size: calc(11px * var(--scale-texto)); }
-  .input-notas { width: 100%; border: 1px solid #9ca3af; border-radius: 3px; padding: 3px 5px; font-size: calc(11px * var(--scale-texto)); text-align: center; }
-  .check-box { width: 17px; height: 17px; cursor: pointer; }
-  .grid-pub { grid-template-columns: 32px minmax(130px,1fr) 85px 75px minmax(150px,2fr); }
-  .grid-prec { grid-template-columns: 32px minmax(130px,1fr) 85px 75px 60px minmax(150px,2fr); }
-  .resumen-tabla { background: white; border-radius: 8px; padding: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); width: 382px; margin: 8px 0 0 0; border: 1px solid #cbd5e1; overflow: hidden; }
-  .resumen-titulo { background: #1e40af; color: white; padding: 8px; text-align: center; font-size: calc(11px * var(--scale-titulo)); font-weight: 700; letter-spacing: 0.5px; }
-  .resumen-table { width: 100%; border-collapse: collapse; font-size: calc(10px * var(--scale-texto)); }
-  .resumen-table th { background: #3b82f6; color: white; font-weight: 700; padding: 6px 4px; text-align: center; font-size: calc(9px * var(--scale-encabezado)); }
-  .resumen-table th:first-child { text-align: left; padding-left: 8px; }
-  .resumen-table td { padding: 6px 4px; text-align: center; border-bottom: 1px solid #f1f5f9; }
-  .resumen-table tbody tr:nth-child(odd) td { background: #eff6ff; }
-  .resumen-table tbody tr:nth-child(even) td { background: #ffffff; }
-  .resumen-table td:first-child { text-align: left; font-weight: 500; color: #334155; padding-left: 8px; }
-  .resumen-table tr:last-child { background: #1e3a8a!important; color: white; font-weight: 700; }
-  .resumen-table tr:last-child td { color: white!important; border-bottom: 0; background: #1e3a8a!important; }
-  .btn-accion { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; }
-  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1f2937; color: white; padding: 12px 20px; border-radius: 8px; font-size: 14px; z-index: 9999; opacity: 0; transition: opacity 0.3s; }
-  .toast-show { opacity: 1; }
-    @media print {
-    .no-print { display: none!important; }
-      html, body { background: white; margin: 0; padding: 0; }
-      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      #areaImprimir { transform: scale(0.73); transform-origin: top left; padding: 2mm; width: 137%; margin-bottom: 8mm; }
-    .tabla-excel { font-size: 7px; page-break-inside: avoid; width: 100%; }
-    .tabla-header > div { padding: 2px 1px; font-size: 7px; }
-    .tabla-excel > div { min-height: 17px; padding: 1px; }
-    .celda-nombre { font-size: 8px!important; }
-    .input-num,.input-notas { font-size: 7px; padding: 1px; border: 0; background: transparent; }
-    .check-box { width: 10px; height: 10px; }
-    .resumen-tabla { box-shadow: none; border: 1px solid #94a3b8; page-break-inside: avoid; width: 270px; margin: 4px 0 8mm 0; }
-    .resumen-titulo { padding: 3px; font-size: 7.5px; }
-    .resumen-table { font-size: 6.5px; }
-    .resumen-table th,.resumen-table td { padding: 2px; }
-    .print-header { display: block!important; text-align: center; margin-bottom: 2px; font-size: 8.5px; }
-    }
-  .print-header { display: none; }
-  </style>
-</head>
-<body>
-  <div id="toast" class="toast"></div>
-  <div id="overlay" class="overlay fixed inset-0 bg-black/50 z-40 no-print" onclick="toggleSidebar()"></div>
-  <div id="sidebar" class="sidebar fixed top-0 left-0 h-full w-72 bg-white shadow-2xl z-50 no-print">
-    <div class="p-5 bg-blue-600 text-white">
-      <div class="text-xs opacity-80">Congregación</div>
-      <div class="font-semibold text-sm" id="menuCongre">Pueblo Nuevo Autopan</div>
-      <div class="text-sm opacity-90" id="menuGrupo">Grupo 6 | País: México</div>
-    </div>
-    <div class="p-3 space-y-1">
-      <button onclick="toggleFontPanel()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-100 flex items-center gap-3">
-        <i class="fa-solid fa-text-height text-indigo-600 w-5"></i><span>Tamaño de Letra</span>
-      </button>
-      <div id="fontPanel" class="font-panel bg-gray-50 rounded-lg p-2 mx-2 space-y-2">
-        <div class="flex items-center justify-between text-xs">
-          <span class="font-semibold text-gray-600 w-20">Texto</span>
-          <button onclick="cambiarEscala('texto',-0.1)" class="bg-gray-300 px-2 py-1 rounded">-</button>
-          <span id="scaleTexto" class="w-8 text-center">100%</span>
-          <button onclick="cambiarEscala('texto',0.1)" class="bg-gray-300 px-2 py-1 rounded">+</button>
-        </div>
-        <div class="flex items-center justify-between text-xs">
-          <span class="font-semibold text-gray-600 w-20">Títulos</span>
-          <button onclick="cambiarEscala('titulo',-0.1)" class="bg-gray-300 px-2 py-1 rounded">-</button>
-          <span id="scaleTitulo" class="w-8 text-center">100%</span>
-          <button onclick="cambiarEscala('titulo',0.1)" class="bg-gray-300 px-2 py-1 rounded">+</button>
-        </div>
-        <div class="flex items-center justify-between text-xs">
-          <span class="font-semibold text-gray-600 w-20">Encabezado</span>
-          <button onclick="cambiarEscala('encabezado',-0.1)" class="bg-gray-300 px-2 py-1 rounded">-</button>
-          <span id="scaleEncabezado" class="w-8 text-center">100%</span>
-          <button onclick="cambiarEscala('encabezado',0.1)" class="bg-gray-300 px-2 py-1 rounded">+</button>
-        </div>
-      </div>
-      <div class="border-t my-1"></div>
-      <button onclick="mostrarPantalla('informe')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-100 flex items-center gap-3">
-        <i class="fa-solid fa-file-lines text-blue-600 w-5"></i><span>Informe Mensual</span>
-      </button>
-      <button onclick="mostrarPantalla('catalogo')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-100 flex items-center gap-3">
-        <i class="fa-solid fa-user-plus text-green-600 w-5"></i><span>Agregar Publicador</span>
-      </button>
-      <button onclick="mostrarPantalla('historial')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-100 flex items-center gap-3">
-        <i class="fa-solid fa-clock-rotate-left text-purple-600 w-5"></i><span>Historial</span>
-      </button>
-      <button onclick="mostrarPantalla('resumen')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-100 flex items-center gap-3">
-        <i class="fa-solid fa-chart-column text-orange-600 w-5"></i><span>Resumen</span>
-      </button>
-      <button onclick="mostrarPantalla('ajuste')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-100 flex items-center gap-3">
-        <i class="fa-solid fa-gear text-gray-600 w-5"></i><span>Ajuste y Perfil</span>
-      </button>
-      <div class="border-t my-2"></div>
-      <button onclick="exportarJSON()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-100 flex items-center gap-3">
-        <i class="fa-solid fa-cloud-arrow-down text-emerald-600 w-5"></i><span>Backup</span>
-      </button>
-      <button onclick="imprimirInforme()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-100 flex items-center gap-3">
-        <i class="fa-solid fa-print text-red-600 w-5"></i><span>Imprimir</span>
-      </button>
-      <button onclick="toggleSidebar()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-100 flex items-center gap-3 text-gray-600">
-        <i class="fa-solid fa-xmark w-5"></i><span>Cerrar menú</span>
-      </button>
-    </div>
-  </div>
-  <div class="bg-white shadow-sm sticky top-0 z-30 no-print">
-    <div class="flex items-center justify-between p-3">
-      <button onclick="toggleSidebar()" class="p-2 hover:bg-gray-100 rounded-lg">
-        <i class="fa-solid fa-bars text-xl text-gray-700"></i>
-      </button>
-      <div class="text-center flex-1">
-        <h1 class="font-bold text-gray-800 font-titulo">INFORME DE PREDICACIÓN - GRUPO N° 6</h1>
-        <p class="text-gray-500 font-encabezado" id="nombreMes"></p>
-      </div>
-      <div class="p-2 text-green-600 opacity-0 transition-opacity" id="saveStatus">
-        <i class="fa-solid fa-check text-xl"></i>
-      </div>
-    </div>
-  </div>
-  <div id="pantalla-informe" class="pantalla pantalla-activa">
-    <div class="px-3 py-2 bg-white border-b flex gap-2 items-center no-print flex-wrap">
-      <button onclick="cambiarMes(-1)" class="bg-gray-200 hover:bg-gray-300 px-3 py-2 rounded-lg text-gray-700">
-        <i class="fa-solid fa-chevron-left"></i>
-      </button>
-      <div class="flex-1 bg-gray-50 rounded-lg px-3 py-2 font-bold text-center text-gray-800 font-titulo" id="mesDisplay"></div>
-      <button onclick="cambiarMes(1)" class="bg-gray-200 hover:bg-gray-300 px-3 py-2 rounded-lg text-gray-700">
-        <i class="fa-solid fa-chevron-right"></i>
-      </button>
-    </div>
-    <div class="px-3 py-2 bg-gray-50 border-b flex gap-2 items-center no-print flex-wrap justify-center">
-      <button onclick="generarPDF()" class="btn-accion bg-blue-600 hover:bg-blue-700 text-white">
-        <i class="fa-solid fa-file-pdf"></i>PDF
-      </button>
-      <button onclick="compartirInforme()" class="btn-accion bg-green-600 hover:bg-green-700 text-white">
-        <i class="fa-solid fa-share-nodes"></i>Compartir
-      </button>
-      <button onclick="enviarWhatsApp()" class="btn-accion bg-emerald-500 hover:bg-emerald-600 text-white">
-        <i class="fa-brands fa-whatsapp"></i>WhatsApp
-      </button>
-      <button onclick="limpiarMes()" class="btn-accion bg-gray-600 hover:bg-gray-700 text-white">
-        <i class="fa-solid fa-broom"></i>Limpiar Mes
-      </button>
-    </div>
-    <div class="bg-blue-50 px-3 py-2 text-center border-b no-print font-encabezado">
-      <span class="font-semibold">Superintendente:</span> <span id="mostrarSuper">Raúl Morales</span> |
-      <span class="font-semibold">Auxiliar:</span> <span id="mostrarAux">Maynor Calero</span>
-    </div>
-    <div id="areaImprimir">
-      <div class="print-header">
-        <div class="font-bold">INFORME DE PREDICACIÓN - GRUPO N° 6</div>
-        <div id="mesPrint"></div>
-        <div class="mt-1">Superintendente: <span id="superPrint"></span> | Auxiliar: <span id="auxPrint"></span></div>
-      </div>
-      <div id="contenidoTablas" class="p-2 space-y-3"></div>
-      <div id="resumenBox" class="p-2"></div>
-    </div>
-  </div>
-  <div id="pantalla-catalogo" class="pantalla no-print">
-    <div class="bg-blue-600 text-white p-4">
-      <h2 class="font-bold text-lg">Catálogo de Publicadores</h2>
-      <p class="text-xs opacity-90">Se guardan para siempre. No vuelves a escribirlos.</p>
-    </div>
-    <div class="bg-white border-b flex text-sm">
-      <button onclick="cambiarCatTab(0)" class="cat-tab flex-1 py-3 font-semibold text-blue-600 border-b-2 border-blue-600">Publicadores</button>
-      <button onclick="cambiarCatTab(1)" class="cat-tab flex-1 py-3 font-semibold text-gray-500">Regulares</button>
-      <button onclick="cambiarCatTab(2)" class="cat-tab flex-1 py-3 font-semibold text-gray-500">Auxiliares</button>
-    </div>
-    <div class="p-3 bg-gray-50 border-b flex gap-2">
-      <input id="nuevoNombre" placeholder="Nombre del publicador..." class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm">
-      <button onclick="agregarPublicador()" class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-sm">
-        <i class="fa-solid fa-plus"></i> Agregar
-      </button>
-    </div>
-    <div id="catalogoContent" class="p-4"></div>
-  </div>
-  <div id="pantalla-historial" class="pantalla no-print">
-    <div class="bg-purple-600 text-white p-4">
-      <h2 class="font-bold text-lg">Historial de Meses</h2>
-    </div>
-    <div class="p-3">
-      <input id="buscarMes" placeholder="Buscar mes..." oninput="filtrarHistorial()" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm mb-3">
-      <div id="listaHistorial" class="space-y-2"></div>
-    </div>
-  </div>
-  <div id="pantalla-resumen" class="pantalla no-print">
-    <div class="bg-orange-600 text-white p-4">
-      <h2 class="font-bold text-lg">Resumen Anual</h2>
-      <p class="text-xs opacity-90" id="mesResumen"></p>
-    </div>
-    <div id="contenidoResumen" class="p-3"></div>
-  </div>
-  <div id="pantalla-ajuste" class="pantalla no-print">
-    <div class="bg-gray-600 text-white p-4">
-      <h2 class="font-bold text-lg">Ajuste y Perfil</h2>
-    </div>
-    <div class="p-4 space-y-4">
-      <div class="bg-white rounded-lg p-4 shadow-sm">
-        <h3 class="font-bold text-sm mb-3">Foto de Perfil</h3>
-        <div class="text-center">
-          <div class="w-24 h-24 mx-auto rounded-full bg-gray-200 overflow-hidden mb-3 flex items-center justify-center">
-            <img id="previewFoto" src="" class="hidden w-full h-full object-cover">
-            <i id="iconPreview" class="fa-solid fa-user text-3xl text-gray-400"></i>
-          </div>
-          <label class="text-blue-600 text-sm font-medium cursor-pointer">
-            <i class="fa-solid fa-camera mr-1"></i>Subir foto
-            <input type="file" accept="image/*" class="hidden" onchange="cargarFoto(event)">
-          </label>
-        </div>
-      </div>
-      <div class="bg-white rounded-lg p-4 shadow-sm">
-        <h3 class="font-bold text-sm mb-3">Datos de Congregación</h3>
-        <div class="space-y-3">
-          <div><label class="text-xs font-semibold text-gray-600 block mb-1">Congregación:</label><input id="inputCongre" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"></div>
-          <div><label class="text-xs font-semibold text-gray-600 block mb-1">N° de Grupo:</label><input id="inputGrupo" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"></div>
-          <div><label class="text-xs font-semibold text-gray-600 block mb-1">País:</label><input id="inputPais" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"></div>
-          <div><label class="text-xs font-semibold text-gray-600 block mb-1">Superintendente:</label><input id="inputSuper" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"></div>
-          <div><label class="text-xs font-semibold text-gray-600 block mb-1">Auxiliar:</label><input id="inputAux" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"></div>
-        </div>
-        <button onclick="guardarPerfil()" class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold mt-4">Guardar Perfil</button>
-      </div>
-      <div class="bg-white rounded-lg p-4 shadow-sm">
-        <h3 class="font-bold text-sm mb-3">Restaurar Backup</h3>
-        <label class="w-full bg-emerald-600 text-white py-2 rounded-lg font-semibold block text-center cursor-pointer">
-          <i class="fa-solid fa-upload mr-2"></i>Importar Datos
-          <input type="file" accept=".json" class="hidden" onchange="importarJSON(event)">
-        </label>
-      </div>
-    </div>
-  </div>
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
-    }
-    let catalogo = JSON.parse(localStorage.getItem('catalogo')) || [[], [], []];
-    let datos = JSON.parse(localStorage.getItem('informes')) || {};
-    let perfil = JSON.parse(localStorage.getItem('perfil')) || { congre: 'Pueblo Nuevo Autopan', grupo: '6', pais: 'México', super: 'Raúl Morales', aux: 'Maynor Calero', foto: '' };
-    let escalas = JSON.parse(localStorage.getItem('escalas')) || { texto: 1, titulo: 1, encabezado: 1 };
-    let mesActual = getMesActual();
-    let catTab = 0;
-    let saveTimeout = null;
-    document.documentElement.style.setProperty('--scale-texto', escalas.texto);
-    document.documentElement.style.setProperty('--scale-titulo', escalas.titulo);
-    document.documentElement.style.setProperty('--scale-encabezado', escalas.encabezado);
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VMC Empresa</title>
 
-    function mostrarToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('toast-show');
-      setTimeout(() => t.classList.remove('toast-show'), 2500);
-    }
-    function getMesActual() {
-      const f = new Date();
-      return `${f.getFullYear()}-${String(f.getMonth() + 1).padStart(2, '0')}`;
-    }
-    function formatMes(mesKey) {
-      const [a, m] = mesKey.split('-');
-      const fecha = new Date(a, m - 1);
-      return fecha.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }).toUpperCase();
-    }
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('sidebar-open');
-      document.getElementById('overlay').classList.toggle('overlay-active');
-    }
-    function toggleFontPanel() {
-      document.getElementById('fontPanel').classList.toggle('font-panel-open');
-      actualizarEscalasDisplay();
-    }
-    function cambiarEscala(tipo, delta) {
-      escalas[tipo] += delta;
-      if (escalas[tipo] < 0.7) escalas[tipo] = 0.7;
-      if (escalas[tipo] > 1.4) escalas[tipo] = 1.4;
-      document.documentElement.style.setProperty('--scale-' + tipo, escalas[tipo]);
-      localStorage.setItem('escalas', JSON.stringify(escalas));
-      actualizarEscalasDisplay();
-    }
-    function actualizarEscalasDisplay() {
-      document.getElementById('scaleTexto').textContent = Math.round(escalas.texto * 100) + '%';
-      document.getElementById('scaleTitulo').textContent = Math.round(escalas.titulo * 100) + '%';
-      document.getElementById('scaleEncabezado').textContent = Math.round(escalas.encabezado * 100) + '%';
-    }
-    function mostrarPantalla(p) {
-      document.querySelectorAll('.pantalla').forEach(e => e.classList.remove('pantalla-activa'));
-      document.getElementById('pantalla-' + p).classList.add('pantalla-activa');
-      toggleSidebar();
-      if (p === 'catalogo') renderCatalogo();
-      if (p === 'historial') renderHistorial();
-      if (p === 'resumen') renderResumenCompleto();
-      if (p === 'ajuste') cargarPerfilForm();
-    }
-    function init() {
-      cargarPerfil();
-      if (!datos[mesActual]) crearMesVacio(mesActual);
-      actualizarDisplay();
-      renderTablas();
-      renderResumenBox();
-      actualizarEscalasDisplay();
-    }
-    function crearMesVacio(mes) {
-      datos[mes] = [
-        catalogo[0].map(n => ({ nombre: n, part: 0, cursos: '', notas: '' })),
-        catalogo[1].map(n => ({ nombre: n, part: 0, cursos: '', horas: '', notas: '' })),
-        catalogo[2].map(n => ({ nombre: n, part: 0, cursos: '', horas: '', notas: '' }))
-      ];
-      guardarDatos();
-    }
-    function actualizarDisplay() {
-      document.getElementById('mesDisplay').textContent = formatMes(mesActual);
-      document.getElementById('nombreMes').textContent = formatMes(mesActual);
-      document.getElementById('mesResumen').textContent = formatMes(mesActual);
-      document.getElementById('mostrarSuper').textContent = perfil.super;
-      document.getElementById('mostrarAux').textContent = perfil.aux;
-      document.getElementById('mesPrint').textContent = formatMes(mesActual);
-      document.getElementById('superPrint').textContent = perfil.super;
-      document.getElementById('auxPrint').textContent = perfil.aux;
-      document.getElementById('menuCongre').textContent = perfil.congre;
-      document.getElementById('menuGrupo').textContent = `Grupo ${perfil.grupo} | País: ${perfil.pais}`;
-      if (perfil.foto) {
-        document.getElementById('previewFoto').src = perfil.foto;
-        document.getElementById('previewFoto').classList.remove('hidden');
-        document.getElementById('iconPreview').classList.add('hidden');
-      }
-    }
-    function cambiarMes(dir) {
-      let [a, m] = mesActual.split('-').map(Number);
-      m += dir;
-      if (m === 0) { m = 12; a--; }
-      if (m === 13) { m = 1; a++; }
-      mesActual = `${a}-${String(m).padStart(2, '0')}`;
-      if (!datos[mesActual]) crearMesVacio(mesActual);
-      actualizarDisplay();
-      renderTablas();
-      renderResumenBox();
-    }
-    function renderTablas() {
-      if (!datos[mesActual]) crearMesVacio(mesActual);
-      const [pub, reg, aux] = datos[mesActual];
-      let html = '';
-      html += renderTablaExcel('PUBLICADORES', pub, 0, false);
-      html += renderTablaExcel('PRECURSOR REGULAR', reg, 1, true);
-      html += renderTablaExcel('PRECURSOR AUXILIAR', aux, 2, true);
-      document.getElementById('contenidoTablas').innerHTML = html;
-    }
-    function renderTablaExcel(titulo, lista, seccion, conHoras) {
-      const gridClass = conHoras? 'grid-prec' : 'grid-pub';
-      let html = `
-        <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-3">
-          <div class="bg-gray-800 text-white font-bold p-2 font-encabezado">${titulo}</div>
-          <div class="tabla-wrap">
-            <div class="tabla-excel ${gridClass} tabla-header">
-              <div class="celda-num">N°</div>
-              <div class="celda-nombre">Nombre</div>
-              <div class="celda-check">Participación</div>
-              <div class="celda-input">Cursos Bíblicos</div>
-              ${conHoras? '<div class="celda-horas">Horas</div>' : ''}
-              <div class="celda-notas">Notas</div>
-            </div>`;
-      if (lista.length === 0) {
-        html += `<div class="p-4 text-center text-gray-400" style="font-size: calc(0.75rem * var(--scale-texto))">Sin nombres. Ve a "Agregar Publicador" en el menú.</div>`;
-      }
-      lista.forEach((p, i) => {
-        html += `
-            <div class="tabla-excel ${gridClass}">
-              <div class="celda-num text-gray-500">${i + 1}</div>
-              <div class="celda-nombre font-medium" title="${p.nombre}">${p.nombre}</div>
-              <div class="celda-check">
-                <input type="checkbox" ${p.part==1?'checked':''} onchange="actualizar(${seccion},${i},'part',this.checked?1:0)" class="check-box">
-              </div>
-              <div class="celda-input">
-                <input type="number" min="0" value="${p.cursos||''}" oninput="validarYActualizar(${seccion},${i},
+<link rel="manifest" href="manifest.json">
+
+<style>
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background:#f1f5f9;
+}
+
+.header{
+    background:#0f172a;
+    color:white;
+    padding:15px;
+    display:flex;
+    justify-content:space-between;
+}
+
+.container{padding:15px;}
+
+.card{
+    background:white;
+    padding:15px;
+    border-radius:12px;
+    margin-bottom:15px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+select{
+    width:100%;
+    padding:8px;
+    margin-top:5px;
+}
+
+button{
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    background:#1e293b;
+    color:white;
+    margin:5px;
+}
+
+.history{
+    max-height:200px;
+    overflow:auto;
+    font-size:13px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+📊 VMC Empresa
+<input type="week" id="week">
+</div>
+
+<div class="container">
+
+<div>
+<button onclick="guardar()">💾 Guardar</button>
+<button onclick="exportar()">📄 PDF</button>
+</div>
+
+<div class="card">
+<h3>🟦 Tesoros</h3>
+<select id="t1"></select>
+<select id="t2"></select>
+<select id="t3"></select>
+</div>
+
+<div class="card">
+<h3>🟩 Maestros</h3>
+<select id="m1"></select>
+<select id="m2"></select>
+<select id="m3"></select>
+</div>
+
+<div class="card">
+<h3>🟨 Vida Cristiana</h3>
+<select id="v1"></select>
+<select id="v2"></select>
+<select id="v3"></select>
+</div>
+
+<div class="card">
+<h3>📊 Historial</h3>
+<div class="history" id="historial"></div>
+</div>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
